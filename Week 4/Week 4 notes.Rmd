@@ -1,0 +1,32 @@
+---
+title: "Week 4 Async Notes"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+##The K-mean algrithm,
+
+Choose K points as the initial centroid
+
+repeat
+  Form K clusters by assigning all points to the closest centroid
+  Recompute the centroid of each cluster.
+Stop when the centroids don't change any longer.
+
+#Tuning K-Means
+
+##Solutions to intitial centroid problems
+
+Perform multiple runs, changing random seeds every time. Helps but probability is not on your side. 
+Sample and use hierarchical cluster to determine initial centroids
+Select more than k initial centroids and then select amount
+Select the most widely spread
+
+##Compare the SSE of Different Initial Centroids
+
+Most common measure is the sum of squared error (SSE)
+x is a data point in cluster Ci and mi is the centroid or medoid for Cluster Ci
+
+For each point, the error is the distance to centroid or Medoid. To get SSE, we square these errors and sume them.

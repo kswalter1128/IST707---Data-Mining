@@ -1,0 +1,70 @@
+=== Run information ===
+
+Scheme:       weka.associations.Apriori -N 30 -T 0 -C 0.7 -D 0.05 -U 1.0 -M 0.1 -S -1.0 -A -c -1
+Relation:     bankdata_csv_all-weka.filters.unsupervised.attribute.Remove-R1-weka.filters.unsupervised.attribute.Discretize-B3-M-1.0-R1-precision6-weka.filters.unsupervised.attribute.Discretize-B3-M-1.0-R4-precision6
+Instances:    600
+Attributes:   11
+              age
+              sex
+              region
+              income
+              married
+              children
+              car
+              save_act
+              current_act
+              mortgage
+              pep
+=== Associator model (full training set) ===
+
+
+Apriori
+=======
+
+Minimum support: 0.1 (60 instances)
+Minimum metric <confidence>: 0.7
+Number of cycles performed: 18
+
+Generated sets of large itemsets:
+
+Size of set of large itemsets L(1): 42
+
+Size of set of large itemsets L(2): 156
+
+Size of set of large itemsets L(3): 125
+
+Size of set of large itemsets L(4): 24
+
+Best rules found:
+
+ 1. married=YES children=0 save_act=YES current_act=YES 87 ==> pep=NO 80    conf:(0.92)
+ 2. married=YES children=0 save_act=YES mortgage=NO 80 ==> pep=NO 73    conf:(0.91)
+ 3. married=YES children=0 current_act=YES mortgage=NO 88 ==> pep=NO 80    conf:(0.91)
+ 4. sex=FEMALE married=YES children=0 mortgage=NO 70 ==> pep=NO 63    conf:(0.9)
+ 5. married=YES children=0 save_act=YES 119 ==> pep=NO 107    conf:(0.9)
+ 6. married=YES children=0 mortgage=NO 116 ==> pep=NO 104    conf:(0.9)
+ 7. married=YES children=0 car=NO mortgage=NO 67 ==> pep=NO 60    conf:(0.9)
+ 8. children=1 save_act=YES current_act=YES 73 ==> pep=YES 63    conf:(0.86)
+ 9. children=1 mortgage=NO 84 ==> pep=YES 71    conf:(0.85)
+10. sex=FEMALE married=YES children=0 current_act=YES 71 ==> pep=NO 60    conf:(0.85)
+11. children=1 save_act=YES 95 ==> pep=YES 80    conf:(0.84)
+12. children=1 current_act=YES 101 ==> pep=YES 84    conf:(0.83)
+13. married=YES children=1 89 ==> pep=YES 74    conf:(0.83)
+14. sex=FEMALE married=YES children=0 94 ==> pep=NO 78    conf:(0.83)
+15. children=1 135 ==> pep=YES 110    conf:(0.81)
+16. married=YES children=0 car=NO current_act=YES 74 ==> pep=NO 60    conf:(0.81)
+17. married=YES children=0 car=NO 100 ==> pep=NO 80    conf:(0.8)
+18. married=YES children=0 current_act=YES 133 ==> pep=NO 105    conf:(0.79)
+19. sex=FEMALE children=0 save_act=YES 88 ==> pep=NO 69    conf:(0.78)
+20. married=YES children=0 180 ==> pep=NO 141    conf:(0.78)
+21. married=YES children=0 car=YES 80 ==> pep=NO 61    conf:(0.76)
+22. children=0 save_act=YES current_act=YES 133 ==> pep=NO 101    conf:(0.76)
+23. region=INNER_CITY married=YES children=0 85 ==> pep=NO 64    conf:(0.75)
+24. children=0 car=YES save_act=YES 85 ==> pep=NO 64    conf:(0.75)
+25. children=0 save_act=YES 174 ==> pep=NO 131    conf:(0.75)
+26. children=0 car=NO save_act=YES 89 ==> pep=NO 67    conf:(0.75)
+27. married=NO save_act=YES mortgage=NO 86 ==> pep=YES 64    conf:(0.74)
+28. income='(0-24386]' married=YES save_act=YES mortgage=NO 83 ==> pep=NO 61    conf:(0.73)
+29. sex=MALE married=YES children=0 86 ==> pep=NO 63    conf:(0.73)
+30. income='(0-24386]' married=YES save_act=YES 118 ==> pep=NO 86    conf:(0.73)
+

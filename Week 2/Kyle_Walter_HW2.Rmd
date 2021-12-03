@@ -1,0 +1,84 @@
+---
+title: "Kyle_Walter_Homework2"
+author: "Kyle Walter"
+date: "1/27/2021"
+output:
+  word_document: default
+  html_document: default
+---
+
+Assignment, review the data from the 5 Schools implementing the same math course over teh summer to the 30 sections, (6 at each school). The course is currently about 3/4 of the way through. What is the story the data is telling about the course so far.
+
+First let's load the data into R so we're able to work with
+
+```{r}
+require(data.table)
+DF <- fread("data-storyteller.csv")
+```
+
+Now that the data is loaded let's impsect it by school
+```{r}
+DF[, .(VeryAhead=sum(`Very Ahead +5`), Middling=sum(`Middling +0`), Behind=sum(`Behind -1-5`), MoreBehind=sum(`More Behind -6-10`), VeryBehind=sum(`Very Behind -11`), Completed=sum(Completed)), .(School)]
+```
+As we can see from a quick glance of the data, most of the students are behind overall. With no students Very ahead. And a small portion already completed.
+
+
+Since no students are Very Ahead, defined as more than 5 lessons a head. Let's if this makes sense. Since we know there are 35 lessons how many lessons would we expect the students to have completed at 3 quarters through the course.
+```{r}
+35*.75
+```
+Roughly 27 should be completed at this point in the course. In order to be very head the students would have to have 32 lessons done, so this makes sense. The numbers would likley quickly jump through this category into completion at this point in the course. However; our behind categories ar quite high. Let's dig into them a little bit.
+
+First we'll turn section into a character variable. We won't be doing math on this value that R imported as a number.
+```{r}
+DF$Section <- as.character(DF$Section)
+```
+
+Next we'll melt the data set down to make it easier to analyze, and add percentage columns by section and by school. This will help us see if there are other problems going on in particular classes or schools.
+
+```{r}
+DFMelt <- melt.data.table(DF)
+DFMelt[, ':='(SectionTotal=sum(value)), .(School, Section)]                          
+DFMelt[, ':='(SchoolTotal=sum(value)), .(School)]
+DFMelt[, ':='(SectionPercent=value/SectionTotal, SchoolPercent= value/SchoolTotal)]
+```
+
+First let's see if there anything interesting by school
+```{r}
+DFMelt[variable=="Behind -1-5"|variable=="More Behind -6-10"|variable=="Very Behind -11",
+       .(SchoolPercent=sum(value)/mean(SchoolTotal)), .(School)]
+```
+
+Over all schools are showing more than half the enrolled students are behind. Over all it does tell us that course will need to be re-evaluated to figure out where the problems are.
+
+Is it merely that the students overall are just slightly behind or very behnd?
+
+```{r}
+Behind <- DFMelt[variable=="Behind -1-5"|variable=="More Behind -6-10"|variable=="Very Behind -11"]
+
+Behind <- Behind[, (SchoolPercent=sum(value)/mean(SchoolTotal)), .(School, variable)]
+dcast.data.table(Behind, School~variable)
+```
+
+Overall the students classifed as behind the course are within 5 lessons of being on track. This is good news as they have a potential to catch up and complete the course on time with a little extra effort. That said, with this large of group, it would be nice to see if there was a specific lesson that most of the students were struggling with. The data however, does not contain such information.
+
+From this view of the data, school D looks like a lost cause with 27% of their students very far behind. However; when looking at the total students of School D we can quickly see that percents alone are not very telling
+
+```{r}
+DFMelt[School=="D", .(TotalStudents=sum(value)), .(School, Section)]
+```
+
+As there is only 1 section and 22 total students.
+
+The percent of students in the "More Behind" classifcation runs from about 3 to 8 percent. School A has the 2nd highest percentage,  but overall the most students of the schools.
+
+Schoo A also has the 2nd highest average students per session, which puts in question for those students, who are more behind or very behind, will likely lack access to the resources to get caught up.
+
+School E which has only 1 section will likely also show low finish rates amoung its students in the last two buckets as it has 122 students in its signle section being offered.
+```{r}
+DFMelt[, .(SectionAverage=mean(SectionTotal)), .(School)]
+```
+
+In conclusion,  while the data tells us at this point in time large section of students are classified as behind, it does appear they are still within reach being complete by the end of the course as they are within 5 lessons of being on schedule. Additional data should be collected if availabe to see if a particular lesson caused the students to fall behind. Another consideration is what is the student's math history prior to the course, is this one at too high a level or do we have any seperation of students based on prior learning or ability?
+
+Additionally for schools A and E they will likely need more sections if future sessions are of the course.
