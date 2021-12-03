@@ -1,0 +1,75 @@
+---
+title: "Homework 6"
+author: "Kyle Walter"
+date: "2/28/2021"
+output: word_document
+---
+# Working with Handwritten Numbers
+
+##Background and Preprocessing
+The challenge at hand, can a predictive algorithm predict the value of a hand written number. Forty-two thousand images of hand digits between zero and nine that have been scanned into a computer. The value in the pixel ranges from 0 to 255 representing the gray scale transaction of image. This usually means that 0 represents white and 255 means the color of that pixel is black. There are 784 pixels per image. Can we utilize the information to predict which numbers are written in each image.
+
+Due to capacity issues, we have selected to utilize a smaller sampling of the data using divide ten selection. In other words selecting every 10 records from the training and test set.
+
+First let's bring in the data
+```{r}
+trainingData <- read.csv("R:/Graduate School/IST707 - Data Analysis/Week 7/Kaggle-digit-train-sample-small-1400.csv")
+testData <- read.csv("R:/Graduate School/IST707 - Data Analysis/Week 7/Kaggle-digit-test-sample1000.csv")
+```
+
+Next we'll transform the labels from integer into factors for the class predction
+```{r}
+trainingData$label <- as.factor(trainingData$label)
+```
+
+Lastly we'll set training controls on this data in order to do our Cross Validation. In this case we'll set the number of folds to three. This means when the model is training it will break the data into thirds. It will use 2/3rd of the data to train the model and 1/3 of the data test the accuracy of the model. It will do this once for each 3rd of the data and tune the results of the model on this outcome. This will help us achieve a more optimum model on a single run though the computational time could be significantly longer.
+
+```{r}
+require(caret)
+Controls <- trainControl(method="cv", number = 3)
+```
+
+
+##Decsion Tree Model
+
+A decsion tree is a model which outputs a flow chart type structure making it easier to understand why a particular record was choosen. For this case we'll use the weka implementation of the C4.5 algorithm called J48. In order to make sure that result in the same the outcome every time where random groups are being chose, we'll set the input to randome number generation. Since tehnical systems use formulas to generate random numbers, but setting the seed we're working with the same random list every time and thus can reproduce the results.
+
+There are two parameters we can adjust to see how the model will function, 1 the confidence value, mean how aggressively do we want the algorithm to simplify the tree. 2 the M value or the number of instances per leaf.
+
+For our training purpose we'll utilize the Caret Package from R for the J48 algorithm. The advantage of this is it will not only allow us to test the folds that we announced earlier, but we'll also see results for the confidence interval and the number of instances per leaf.
+
+```{r}
+set.seed(223)
+Tree <- train(label~., data = trainingData, method="J48", trControl=Controls)
+Tree
+```
+
+So now as we can see from the results of the model, a confidence of .01 and M value (minimum number of instances per leaf), the optimum decision tress found with an accuracy of 72.4% and the model shows us a Kappa recall of 69% over the iterations. Mean this model is about average.
+
+## Bayesian Logistic Regression Model
+
+The other algorithm that we'll test the data on is the Naive Bayes which predicts the probability that a classifier is A or B. We'll set the seed again the fold process works for optimization and run the model
+```{r message=FALSE, warning=FALSE}
+x = trainingData[,-1]
+y = trainingData[,1]
+set.seed(223)
+NbModel <- train(x, y, method="nb", trControl = Controls)
+```
+
+Now that the model has been created, let's take a look at it's outputand see how this model is preforming compared to the decision tree.
+```{r}
+NbModel
+```
+
+Overall this model on the data is significantly less impactful than that of the decision tree. It shows an accuracy of 17.9% meaning it only correctly is able to predict the value of the hand written number 18% of time when tested and optimized over three runs. Additionally by holding out different 3rd of the date the kappa reflects only 6.9%. The likelihood it would recognize the similar value in test set is almost near zero.
+
+
+## Model Choice
+
+Given the outputs of the above two models, it makes more sense in this case to select the decision tree as it has both better classification accuracy of the 10 possibly options and and also provides an overall process recall that is respectible for kappa. This may be driven by the smaller date set, but we could apply to the process on a system with more computational power and retry with the larger data set. It could potentially show a better performance for the naive bays model. Though keep in mind this classifier is better suited for yes or no prediction than those of multiple classes. As such it's performance in this case is greatly reduced.
+
+As for the predictions here we go
+```{r}
+ChosenModel <- predict(Tree, testData)
+ChosenModel
+```
